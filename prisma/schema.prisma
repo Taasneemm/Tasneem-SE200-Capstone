@@ -1,0 +1,48 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model InsurancePolicy {
+  // Changed to string, unique primary key, no autoincrement
+  insurance_policy_id   String @id
+  insurance_policy_name String
+  // Changed from Decimal to Int
+  base_price_sgd        Int
+  type_of_policy        String
+
+  // Relation to join table for Policy Holders
+  policyHolders PolicyHolderPolicy[]
+}
+
+model PolicyHolder {
+  // Assuming NRIC is a unique string identifier.
+  policy_holder_id         String   @id
+  policy_holder_email      String
+  policy_holder_first_name String
+  policy_holder_last_name  String
+
+  // Relation to join table
+  policies PolicyHolderPolicy[]
+}
+
+model PolicyHolderPolicy {
+  policy_holder_id    String
+  // Updated to string to match the InsurancePolicy primary key
+  insurance_policy_id String
+
+  policyHolder   PolicyHolder    @relation(fields: [policy_holder_id], references: [policy_holder_id])
+  insurancePolicy InsurancePolicy @relation(fields: [insurance_policy_id], references: [insurance_policy_id])
+
+  @@id([policy_holder_id, insurance_policy_id])
+}
