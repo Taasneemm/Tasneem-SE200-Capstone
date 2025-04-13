@@ -1,25 +1,56 @@
-# Welcome to Next.js
+# SE200 Capstone Project
 
-This is the most minimal starter for your Next.js project.
+This is my personal capstone project for the SE200 course, where I redesign an outdated insurance system for Singapore Insurance.
 
-## Deploy your own
+## Overview
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/vercel/next.js/tree/canary/examples/hello-world&project-name=hello-world&repository-name=hello-world)
+The project is divided into two parts:
 
-## How to use
+- **Part 1 – Core App:**  
+  Implements essential functionalities based on a [Figma design](https://www.figma.com/design/a0tiEr4j97liUAYErwYEvt/SE200-Capstone-Project-(Part-1)?node-id=0-1&t=2zxqBVO5gotRbDpW-1).  
+  - Develops pages for viewing and adding insurance policies and policy holders.  
+  - Integrates a database using Prisma and leverages Tailwind CSS for the UI.
 
-Execute [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app) with [npm](https://docs.npmjs.com/cli/init), [Yarn](https://yarnpkg.com/lang/en/docs/cli/create/), or [pnpm](https://pnpm.io) to bootstrap the example:
+- **Part 2 – Authentication & Dashboard:**  
+  Adds account registration, login (via Authjs), and a dashboard that displays key metrics such as Total Customers, Total Policies, and Total Sales.
 
-```bash
-npx create-next-app --example hello-world hello-world-app
-```
 
-```bash
-yarn create next-app --example hello-world hello-world-app
-```
+## Project Setup
 
-```bash
-pnpm create next-app --example hello-world hello-world-app
-```
+1. **Clone the Repository:**
 
-Deploy it to the cloud with [Vercel](https://vercel.com/new?utm_source=github&utm_medium=readme&utm_campaign=next-example) ([Documentation](https://nextjs.org/docs/deployment)).
+    ```
+    git clone https://github.com/Taasneemm/Tasneem-SE200-Capstone.git
+    cd Tasneem-SE200-Capstone
+    ```
+
+2. **Install Dependencies:**
+
+    ```
+    npm install
+    # or yarn install
+    ```
+
+3. **Configure Environment Variables:**
+
+    Create a `.env` file in the root directory with:
+
+    ```
+    DATABASE_URL=your_database_connection_string
+    AUTH_SECRET=your_auth_secret_key
+    ```
+
+4. **Set Up the Database:**
+
+    ```
+    npx prisma migrate dev --name init
+    ```
+
+5. **Run the Development Server:**
+
+    ```
+    npm run dev
+    # or yarn dev
+    ```
+
+    Visit [http://localhost:3000](http://localhost:3000) in your browser to see the project in action.
