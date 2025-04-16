@@ -1,3 +1,9 @@
+import "@/globals.css";
+import { db } from "@/db";
+import { redirect } from "next/navigation";
+import { z } from "zod";
+import { auth } from "@/lib/auth"; // Import auth to check for session
+
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { CirclePlus, ChevronLeft, ChevronRight } from "lucide-react";
@@ -11,14 +17,18 @@ import {
   TableCell,
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { db } from "@/db";
-import "@/globals.css";
 
 export default async function AllInsurancePolicyPage({
   searchParams,
 }: {
   searchParams: { offset?: string };
 }) {
+  // Check for a valid session.
+  const session = await auth();
+  if (!session) {
+    redirect("/");
+  }
+
   // Determine the current offset from the query string (default to 0)
   const offset = parseInt(searchParams?.offset ?? "0", 10);
   const policiesPerPage = 5;
@@ -32,7 +42,7 @@ export default async function AllInsurancePolicyPage({
   // Get total number of policies from the DB for pagination logic
   const totalPolicies = await db.insurancePolicy.count();
 
-  // Calculate previous and next offsets
+  // Calculate previous and next offsets.
   const prevOffset = Math.max(offset - policiesPerPage, 0);
   const nextOffset = offset + policiesPerPage;
 

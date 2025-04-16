@@ -1,9 +1,10 @@
-// app/customers/update/page.tsx (example path)
+// app/customers/update/page.tsx
 
 import "@/globals.css";
 import { db } from "@/db/index";
 import { redirect } from "next/navigation";
 import { z } from "zod";
+import { auth } from "@/lib/auth"; // <-- Import auth to check for session
 
 import {
   Select,
@@ -133,13 +134,19 @@ export async function checkAndUpdatePolicyHolder(formData: FormData) {
 
 /**
  * Page Component that fetches InsurancePolicy records,
- * displays them in a single-select dropdown, and shows any validation errors.
+ * displays them in a dropdown, and shows any validation errors.
  */
 export default async function UpdatePolicyHolderPage({
   searchParams,
 }: {
   searchParams: { [key: string]: string | undefined };
 }) {
+  // Check current session.
+  const session = await auth();
+  if (!session) {
+    redirect("/");
+  }
+
   // 1. Fetch policies from the InsurancePolicy table.
   const policyRecords = await db.insurancePolicy.findMany();
 
@@ -159,7 +166,6 @@ export default async function UpdatePolicyHolderPage({
   return (
     <div className="flex min-h-screen items-center justify-center">
       <div className="w-full max-w-md bg-white shadow-sm rounded-md p-6">
-        {/* Updated Heading & Subheading */}
         <h1 className="text-2xl font-bold mb-4">Update Policy Holder Details</h1>
         <p className="text-gray-600 mb-6">Add or change details</p>
 

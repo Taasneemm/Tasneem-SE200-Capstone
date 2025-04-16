@@ -1,8 +1,8 @@
-// app/policies/add/page.tsx
 import "@/globals.css";
 import { db } from "@/db/index";
 import { redirect } from "next/navigation";
 import { z } from "zod";
+import { auth } from "@/lib/auth"; // Import auth to check for session
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -69,12 +69,18 @@ export async function checkAndCreatePolicy(formData: FormData) {
  * It also uses the `reset` query parameter (if present) as a key for the form,
  * forcing a remount so that the fields are cleared.
  */
-export default function AddPolicyForm({
+export default async function AddPolicyForm({
   searchParams,
 }: {
   searchParams: { [key: string]: string | undefined };
 }) {
-  // Parse errors from query parameters if available.
+  // 1. Check for a valid session.
+  const session = await auth();
+  if (!session) {
+    redirect("/");
+  }
+
+  // 2. Parse errors from query parameters if available.
   let errors: { [key: string]: string[] } | null = null;
   if (searchParams.errors) {
     try {
@@ -84,7 +90,7 @@ export default function AddPolicyForm({
     }
   }
   
-  // Use the "reset" query param (if any) as a key to force remounting.
+  // 3. Use the "reset" query param (if any) as a key to force remounting.
   const formKey = searchParams.reset || "default";
 
   return (
