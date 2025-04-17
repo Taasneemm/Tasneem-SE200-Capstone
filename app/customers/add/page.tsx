@@ -1,6 +1,6 @@
 // app/customers/add/page.tsx
 
-import "@/globals.css";
+import "@/app/globals.css";
 import { db } from "@/db/index";
 import { redirect } from "next/navigation";
 import { z } from "zod";

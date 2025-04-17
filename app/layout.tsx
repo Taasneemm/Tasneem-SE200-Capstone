@@ -1,7 +1,7 @@
 // app/layout.tsx
 "use client";
 
-import "@/globals.css";
+import "@/app/globals.css";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Home, Wallet, Users2, LogOut } from "lucide-react";
@@ -63,7 +63,7 @@ export default function RootLayout({
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <Link
-                      href="/"
+                      href="/dashboard"
                       className={`${baseClass} ${
                         isActiveHome() ? activeClass : inactiveClass
                       }`}
