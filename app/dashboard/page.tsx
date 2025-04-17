@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
 import { checkSubscriptionAmtFrmDB } from "@/app/actions/checkSubscriptionAmtDB";
 import { checkTotlRevOfPolciesFrmDB } from "@/app/actions/checkTotalRevOfPolicyFrmDB";
+import { checkRevByMonthFrmDB } from "@/app/actions/checkRevByMonthFrmDB";
 
 import {
   Card,
@@ -41,27 +42,42 @@ export default async function DashboardPage() {
 
   const subscriptionResult = await checkSubscriptionAmtFrmDB();
   const revenueResult = await checkTotlRevOfPolciesFrmDB();
+  const monthlyRevenueRaw = await checkRevByMonthFrmDB();
+
+  const isMonthlyRevenueError = "error" in monthlyRevenueRaw;
+  const monthlyRevenue = Array.isArray(monthlyRevenueRaw) ? monthlyRevenueRaw : [];
 
   const subscriptionCount = subscriptionResult?.count ?? 0;
   const totalRevenue = revenueResult?.totalRevenue ?? 0;
 
+  const monthOrder = [
+    "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+    "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+  ];
+
+  const chartData = monthOrder.map((month) => {
+    const monthData = monthlyRevenue.find((m) => m.month === month);
+    return {
+      name: month,
+      total: monthData?.revenue ?? 0,
+    };
+  });
+
+  const chartMessage = isMonthlyRevenueError
+    ? "Error loading revenue data"
+    : chartData.every((d) => d.total === 0)
+      ? "No revenue data available"
+      : undefined;
+
   return (
     <div className="flex flex-col min-h-screen pt-20">
-      {/* User Name Badge */}
       <div className="px-8">
         <Badge variant="secondary" className="text-3xl">
           {session.user.name}
         </Badge>
       </div>
 
-      {/* Main Content */}
       <div className="flex-1 space-y-4 p-8 pt-6">
-        <div className="flex items-center justify-between space-y-2">
-          <h2 className="text-3xl font-bold tracking-tight">Dashboard</h2>
-          <div className="flex items-center space-x-2">
-            <CalendarDateRangePicker />
-          </div>
-        </div>
 
         <Tabs defaultValue="overview" className="space-y-4">
           <TabsList>
@@ -73,7 +89,6 @@ export default async function DashboardPage() {
 
           <TabsContent value="overview" className="space-y-4">
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-2">
-              {/* Total Revenue Card */}
               <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <CardTitle className="text-sm font-medium">Total Revenue</CardTitle>
@@ -84,7 +99,6 @@ export default async function DashboardPage() {
                 </CardContent>
               </Card>
 
-              {/* Subscriptions Card */}
               <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <CardTitle className="text-sm font-medium">Subscriptions</CardTitle>
@@ -96,14 +110,13 @@ export default async function DashboardPage() {
               </Card>
             </div>
 
-            {/* Overview Chart */}
             <div className="grid gap-4">
               <Card>
                 <CardHeader>
                   <CardTitle>Overview</CardTitle>
                 </CardHeader>
                 <CardContent className="pl-2">
-                  <Overview />
+                  <Overview data={chartData} message={chartMessage} />
                 </CardContent>
               </Card>
             </div>

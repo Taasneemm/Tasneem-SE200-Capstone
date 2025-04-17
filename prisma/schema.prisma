@@ -40,6 +40,7 @@ model PolicyHolderPolicy {
   policy_holder_id    String
   // Updated to string to match the InsurancePolicy primary key
   insurance_policy_id String
+  purchase_date       DateTime @default(now())
 
   policyHolder   PolicyHolder    @relation(fields: [policy_holder_id], references: [policy_holder_id])
   insurancePolicy InsurancePolicy @relation(fields: [insurance_policy_id], references: [insurance_policy_id])
