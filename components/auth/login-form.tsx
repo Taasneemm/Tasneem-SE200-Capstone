@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import * as z from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -21,6 +22,7 @@ import { FormError } from "./form-error";
 import Link from "next/link";
 
 export const LoginForm = () => {
+  const router = useRouter();
   const [error, setError] = useState<string | undefined>();
 
   const form = useForm<z.infer<typeof LoginSchema>>({
@@ -32,11 +34,16 @@ export const LoginForm = () => {
   });
 
   const onSubmit = async (values: z.infer<typeof LoginSchema>) => {
-    const status = await login(values);
-    setError(status?.error);
+    setError(undefined); // Clear previous error
+
+    const status = await login(values as { email: string; password: string });
+
     if (status?.error) {
-      console.log(status.error);
+      setError(status.error);
+      return;
     }
+
+    router.push("/dashboard"); 
   };
 
   return (
@@ -47,11 +54,14 @@ export const LoginForm = () => {
           <Button variant="outline">Register</Button>
         </Link>
       </div>
-      
+
       <Card>
         <CardContent className="mt-4">
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            <form
+              onSubmit={form.handleSubmit(onSubmit)}
+              className="space-y-6"
+            >
               <div className="space-y-4">
                 <FormField
                   control={form.control}
@@ -77,7 +87,11 @@ export const LoginForm = () => {
                     <FormItem>
                       <FormLabel>Password</FormLabel>
                       <FormControl>
-                        <Input {...field} placeholder="******" type="password" />
+                        <Input
+                          {...field}
+                          placeholder="******"
+                          type="password"
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -85,9 +99,11 @@ export const LoginForm = () => {
                 />
               </div>
 
-              <FormError message={error} />
-              
-              <Button type="submit">Login</Button>
+              {error && <FormError message={error} />}
+
+              <Button type="submit" className="w-full">
+                Login
+              </Button>
             </form>
           </Form>
         </CardContent>

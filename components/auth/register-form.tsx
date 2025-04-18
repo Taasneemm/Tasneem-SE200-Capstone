@@ -3,6 +3,7 @@
 import * as z from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { GoogleLogin } from "@/app/actions/google";
 
 import { RegisterSchema } from "@/app/schemas";
 import { Input } from "@/components/ui/input";
@@ -15,18 +16,21 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "../ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { register } from "@/app/actions/register";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
+
+// ✅ Import your Google icon
+import { FcGoogle } from "react-icons/fc"; // You can install via: npm install react-icons
 
 export const RegisterForm = () => {
-  // Using next/navigation for redirection after registration
   const router = useRouter();
 
   const form = useForm<z.infer<typeof RegisterSchema>>({
     resolver: zodResolver(RegisterSchema),
     defaultValues: {
-      name: "",      // added new field for name
+      name: "",
       email: "",
       password: "",
     },
@@ -98,9 +102,48 @@ export const RegisterForm = () => {
                 )}
               />
             </div>
-            <Button type="submit">Register</Button>
+
+            {/* Submit Button */}
+            <Button type="submit" className="w-full">
+              Register
+            </Button>
           </form>
         </Form>
+
+        {/* Divider */}
+        <div className="relative my-6">
+          <div className="absolute inset-0 flex items-center">
+            <span className="w-full border-t border-gray-300" />
+          </div>
+          <div className="relative flex justify-center text-md uppercase text-muted-foreground bg-white px-2">
+            Or 
+          </div>
+        </div>
+
+        {/* Google OAuth Button */}
+        <form action={GoogleLogin} method="POST">
+          <Button
+            type="submit"
+            variant="outline"
+            className="w-full flex items-center justify-center gap-2"
+          >
+            <FcGoogle className="text-xl" />
+            Continue with Google
+          </Button>
+        </form>
+
+        {/* Terms */}
+        <p className="mt-4 text-center text-xs text-muted-foreground">
+          By clicking continue, you agree to our{" "}
+          <Link href="/terms" className="underline">
+            Terms of Service
+          </Link>{" "}
+          and{" "}
+          <Link href="/privacy" className="underline">
+            Privacy Policy
+          </Link>
+          .
+        </p>
       </CardContent>
     </Card>
   );
