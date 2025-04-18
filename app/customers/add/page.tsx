@@ -1,9 +1,10 @@
 // app/customers/add/page.tsx
 
-import "@/globals.css";
+import "@/app/globals.css";
 import { db } from "@/db/index";
 import { redirect } from "next/navigation";
 import { z } from "zod";
+import { auth } from "@/lib/auth"; // Import auth to get session
 
 import {
   Select,
@@ -74,17 +75,25 @@ export async function checkAndCreatePolicyHolder(formData: FormData) {
 
 /**
  * Page Component that fetches InsurancePolicy records,
- * displays them in a single-select dropdown, and shows any validation errors.
+ * validates any errors from query parameters,
+ * and renders the "Add Policy Holder" form.
  */
 export default async function AddPolicyHolderPage({
   searchParams,
 }: {
   searchParams: { [key: string]: string | undefined };
 }) {
-  // 1. Fetch policies from the InsurancePolicy table.
+  // 1. Get the current session.
+  const session = await auth();
+  if (!session) {
+    // If no session is found, redirect to the home page.
+    redirect("/");
+  }
+
+  // 2. Fetch policies from the InsurancePolicy table.
   const policyRecords = await db.insurancePolicy.findMany();
 
-  // 2. Parse any error messages from the query parameters, if provided.
+  // 3. Parse any error messages from the query parameters, if provided.
   let errors: { [key: string]: string[] } | null = null;
   if (searchParams.errors) {
     try {
@@ -94,7 +103,7 @@ export default async function AddPolicyHolderPage({
     }
   }
 
-  // 3. Use the "reset" query parameter as the key to force the form to remount.
+  // 4. Use the "reset" query parameter as the key to force the form to remount.
   const formKey = searchParams.reset || "default";
 
   return (

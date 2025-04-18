@@ -1,4 +1,4 @@
-import { LoginForm } from "@/components/auth/login-form";
+import { RegisterForm } from "@/components/auth/register-form";
 
 export default function AppPage() {
   return (
@@ -10,10 +10,10 @@ export default function AppPage() {
         </h1>
       </div>
 
-      {/* Right Column: 50% width, white background, with login form centered */}
+      {/* Right Column: 50% width, white background, with registration form centered */}
       <div className="flex w-1/2 flex-col items-center justify-center bg-white p-6">
-        <h1 className="text-3xl font-bold mb-6">Login</h1>
-        <LoginForm />
+        <h1 className="text-3xl font-bold mb-6">Register</h1>
+        <RegisterForm />
       </div>
     </div>
   );

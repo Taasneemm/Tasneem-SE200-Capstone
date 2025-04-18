@@ -1,3 +1,9 @@
+import "@/app/globals.css";
+import { db } from "@/db";
+import { redirect } from "next/navigation";
+import { z } from "zod";
+import { auth } from "@/lib/auth"; // Import auth to check for session
+
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { CirclePlus, ChevronLeft, ChevronRight, Edit } from "lucide-react";
@@ -11,14 +17,28 @@ import {
   TableCell,
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { db } from "@/db";
-import "@/globals.css";
+import {
+  Select,
+  SelectGroup,
+  SelectValue,
+  SelectTrigger,
+  SelectContent,
+  SelectLabel,
+  SelectItem,
+} from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
 
 export default async function AllPolicyHoldersPage({
   searchParams,
 }: {
   searchParams: { offset?: string };
 }) {
+  // Check the current session.
+  const session = await auth();
+  if (!session) {
+    redirect("/");
+  }
+
   // Determine the current offset from the query string (default to 0)
   const offset = parseInt(searchParams?.offset ?? "0", 10);
   const holdersPerPage = 5;
@@ -36,7 +56,7 @@ export default async function AllPolicyHoldersPage({
     },
   });
 
-  // Count total policy holders
+  // Count total policy holders.
   const totalHolders = await db.policyHolder.count();
 
   // Calculate previous and next offsets.
