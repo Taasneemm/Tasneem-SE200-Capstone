@@ -1,35 +1,27 @@
 "use server";
-
+import { auth, signOut } from "@/lib/auth";
 import { signIn } from "@/lib/auth";
 import { isRedirectError } from "next/dist/client/components/redirect";
 
-type LoginData = {
-  email: string;
-  password: string;
-};
+export async function login(data) {
+  const currentSession = await auth();
 
-export async function login(data: LoginData) {
+  if (currentSession?.user) {
+    await signOut({ redirect: false }); // Clear session if one exists
+  }
+  
   try {
-    const result = await signIn("credentials", {
+    await signIn("credentials", {
+      redirectTo: "/dashboard",
       email: data.email,
       password: data.password,
-      redirect: false, // 👈 prevents server-side redirect
     });
-
-    console.log("  expecting result: ", result)
-    if (!result || result.error) {
-      console.warn("Login failed:", result?.error);
-      return { error: "Invalid email or password." };
-    }
-
-    return { success: true };
   } catch (error) {
     if (isRedirectError(error)) {
-      console.error("Redirect error during login:", error);
+      console.error("Standard Redirect Error:", error);
       throw error;
     }
 
-    console.error("Unexpected error during login:", error);
-    return { error: "Something went wrong. Please try again." };
+    return { error: "Invalid credentials" };
   }
 }

@@ -33,46 +33,34 @@ export default function RootLayout({
   const router = useRouter();
   const currentPath = usePathname();
   const [initial, setInitial] = useState("U");
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    if (currentPath === "/" || currentPath === "/register") return;
+  
     const verifySession = async () => {
-      if (currentPath === "/" || currentPath === "/register") {
-        setLoading(false);
-        return;
-      }
-
       try {
         const result = await checkSessObjDetail();
-
-        if (!result?.isAuthenticated) {
-          router.replace("/");
+  
+        if (!result.isAuthenticated) {
+          router.push("/");
           return;
         }
-
+  
         const name = result.session?.user?.name ?? "";
         const firstChar = name.charAt(0).toUpperCase() || "U";
         setInitial(firstChar);
       } catch (error) {
         console.error("Session check failed:", error);
-        router.replace("/");
-        return;
+        router.push("/");
       }
-
-      setLoading(false);
     };
-
+  
     verifySession();
   }, [router, currentPath]);
+  
+  
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center h-screen w-screen bg-white">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-black" />
-      </div>
-    );
-  }
-
+  // Render public layout for landing or register
   if (currentPath === "/" || currentPath === "/register") {
     return (
       <html lang="en">
@@ -82,7 +70,8 @@ export default function RootLayout({
   }
 
   const isActiveHome = () => ["/", "/dashboard"].includes(currentPath);
-  const isActivePolicies = () => ["/policies", "/policies/add"].includes(currentPath);
+  const isActivePolicies = () =>
+    ["/policies", "/policies/add"].includes(currentPath);
   const isActiveCustomers = () =>
     ["/customers", "/customers/add", "/customers/update"].includes(currentPath);
 
@@ -96,10 +85,9 @@ export default function RootLayout({
       <body className="min-h-screen">
         <TooltipProvider>
           <div className="flex min-h-screen">
-            {/* Sidebar */}
+            {/* Left Column (Navigation) */}
             <aside className="w-[8%] bg-white p-4">
               <nav className="flex flex-col items-center gap-10 pl-4 py-36">
-                {/* Home */}
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <Link
@@ -115,12 +103,14 @@ export default function RootLayout({
                       />
                     </Link>
                   </TooltipTrigger>
-                  <TooltipContent side="right" className="bg-white text-black text-lg">
+                  <TooltipContent
+                    side="right"
+                    className="bg-white text-black text-lg"
+                  >
                     Home
                   </TooltipContent>
                 </Tooltip>
 
-                {/* Policies */}
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <Link
@@ -136,12 +126,14 @@ export default function RootLayout({
                       />
                     </Link>
                   </TooltipTrigger>
-                  <TooltipContent side="right" className="bg-white text-black text-lg">
+                  <TooltipContent
+                    side="right"
+                    className="bg-white text-black text-lg"
+                  >
                     Policies
                   </TooltipContent>
                 </Tooltip>
 
-                {/* Customers */}
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <Link
@@ -157,16 +149,19 @@ export default function RootLayout({
                       />
                     </Link>
                   </TooltipTrigger>
-                  <TooltipContent side="right" className="bg-white text-black text-lg">
+                  <TooltipContent
+                    side="right"
+                    className="bg-white text-black text-lg"
+                  >
                     Customers
                   </TooltipContent>
                 </Tooltip>
               </nav>
             </aside>
 
-            {/* Main Content */}
+            {/* Right Column */}
             <main className="relative w-[92%] bg-gray-200 p-4">
-              {/* Avatar */}
+              {/* Avatar and User Dropdown */}
               <div className="absolute top-4 right-4">
                 <DropdownMenu>
                   <DropdownMenuTrigger>
@@ -199,7 +194,7 @@ export default function RootLayout({
                 </DropdownMenu>
               </div>
 
-              {/* Page Content */}
+              {/* Main Page Content */}
               {children}
             </main>
           </div>

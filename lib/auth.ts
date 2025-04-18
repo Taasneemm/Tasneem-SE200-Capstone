@@ -5,24 +5,21 @@ import Google from "next-auth/providers/google";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
-  
   adapter: PrismaAdapter(db),
-
+  session: {
+    strategy: "jwt", // ✅ Use JWT for stateless session handling
+  },
   providers: [
-    
     Google({
       clientId: process.env.GOOGLE_CLIENT_ID!,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
     }),
-
-    
     Credentials({
       credentials: {
         email: { label: "Email", type: "text" },
         password: { label: "Password", type: "password" },
       },
       authorize: async (credentials) => {
-        console.log(" credential email and password", credentials.email, credentials.password)
         if (!credentials?.email || !credentials?.password) return null;
 
         try {
@@ -30,7 +27,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             where: { email: credentials.email as string },
           });
 
-          console.log(" user DB passwd", user.password)
           if (!user || user.password !== credentials.password) {
             return null;
           }
@@ -43,9 +39,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       },
     }),
   ],
-
-  
   pages: {
-    error: "/", // handles CredentialsSignin and others
+    error: "/", // Redirect on error
   },
 });
