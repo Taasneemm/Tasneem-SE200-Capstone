@@ -6,7 +6,7 @@ import { redirect } from "next/navigation";
 
 export async function signout() {
   // Call your signOut function to clear the session cookies.
-  await signOut();
+  await signOut({ redirect: false });
   // If sign-out is successful, redirect to "/" (home page).
   redirect("/");
 }
