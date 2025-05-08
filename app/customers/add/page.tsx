@@ -5,7 +5,7 @@ import { db } from "@/db/index";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { auth } from "@/lib/auth"; // Import auth to get session
-
+import { checkAndCreatePolicyHolder } from "@/app/actions/checkAndCreatePolicyHolder"
 import {
   Select,
   SelectGroup,
@@ -18,60 +18,6 @@ import {
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-
-/** 
- * Zod schema for basic PolicyHolder info plus selected policy ID.
- */
-const customerSchema = z.object({
-  id: z.string().nonempty("NRIC is required"),
-  email: z.string().email("Invalid email").nonempty("Email is required"),
-  firstName: z.string().nonempty("First Name is required"),
-  lastName: z.string().nonempty("Last Name is required"),
-  policy: z.string().nonempty("Please select a policy"),
-});
-
-/**
- * Server Action that validates the form data and creates a PolicyHolder record.
- * Optionally, it associates the new holder with the selected policy.
- */
-export async function checkAndCreatePolicyHolder(formData: FormData) {
-  "use server";
-
-  // Convert the form data to an object.
-  const formObject = Object.fromEntries(formData.entries());
-  const result = customerSchema.safeParse(formObject);
-
-  if (!result.success) {
-    const errors = JSON.stringify(result.error.flatten().fieldErrors);
-    redirect(`/customers/add?errors=${encodeURIComponent(errors)}`);
-  }
-
-  // Extract the selected policy ID from the form.
-  const selectedInsurancePolicyId = formData.get("policy") as string | undefined;
-
-  // Create the new PolicyHolder record.
-  const newHolder = await db.policyHolder.create({
-    data: {
-      policy_holder_id: result.data.id,
-      policy_holder_email: result.data.email,
-      policy_holder_first_name: result.data.firstName,
-      policy_holder_last_name: result.data.lastName,
-    },
-  });
-
-  // (Optional) Associate the new holder with the selected policy.
-  if (selectedInsurancePolicyId && selectedInsurancePolicyId.trim() !== "") {
-    await db.policyHolderPolicy.create({
-      data: {
-        policy_holder_id: newHolder.policy_holder_id,
-        insurance_policy_id: selectedInsurancePolicyId,
-      },
-    });
-  }
-
-  // Redirect with a unique reset parameter to force a remount (clearing fields).
-  redirect(`/customers/add?reset=${Date.now()}`);
-}
 
 /**
  * Page Component that fetches InsurancePolicy records,
