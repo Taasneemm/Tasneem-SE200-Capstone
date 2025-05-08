@@ -29,10 +29,6 @@ import { CalendarDateRangePicker } from "@/components/ui/date-range-picker";
 import { Overview } from "@/components/ui/overview";
 import { Badge } from "@/components/ui/badge";
 
-export const metadata: Metadata = {
-  title: "Dashboard",
-  description: "Example dashboard app built using the components.",
-};
 
 export default async function DashboardPage() {
   const session = await auth();

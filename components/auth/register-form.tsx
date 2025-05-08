@@ -21,7 +21,7 @@ import { register } from "@/app/actions/register";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 
-// ✅ Import your Google icon
+// Import your Google icon
 import { FcGoogle } from "react-icons/fc"; // You can install via: npm install react-icons
 
 export const RegisterForm = () => {
