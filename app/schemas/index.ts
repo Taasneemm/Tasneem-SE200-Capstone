@@ -28,3 +28,14 @@ export const customerSchema = z.object({
   lastName: z.string().nonempty("Last Name is required"),
   policy: z.string().nonempty("Please select a policy"),
 });
+
+/** Define the Zod validation schema */
+export const policySchema = z.object({
+  id: z.string().nonempty("ID is required"),
+  name: z.string().nonempty("Name is required"),
+  price: z
+    .string()
+    .nonempty("Price is required")
+    .regex(/^\d+$/, "Price must be a number"),
+  type: z.string().nonempty("Please select a policy type"),
+});
