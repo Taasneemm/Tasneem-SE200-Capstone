@@ -1,3 +1,10 @@
+/* 
+this tells next.js vercel deployment not to statically render this page
+at build time, instead to render it dynamically as
+per request.
+*/
+export const dynamic = "force-dynamic";
+
 import "@/app/globals.css";
 import { db } from "@/db/index";
 import { redirect } from "next/navigation";
