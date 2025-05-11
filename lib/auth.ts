@@ -4,10 +4,10 @@ import Credentials from "next-auth/providers/credentials";
 import Google from "next-auth/providers/google";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 
-const { handlers, signIn, signOut, auth } = NextAuth({
+const getAuthOptions = () => ({
   adapter: PrismaAdapter(db),
   session: {
-    strategy: "jwt", // Use JWT for stateless session handling
+    strategy: "jwt" as const,
   },
   providers: [
     Google({
@@ -40,8 +40,8 @@ const { handlers, signIn, signOut, auth } = NextAuth({
     }),
   ],
   pages: {
-    error: "/", // Redirect on error
+    error: "/",
   },
 });
 
-export { handlers, signIn, signOut, auth };
+export const { handlers, signIn, signOut, auth } = NextAuth(getAuthOptions());
