@@ -33,7 +33,7 @@ const getAuthOptions = () => ({
 
           return user;
         } catch (err) {
-          console.error("Error in authorize:", err);
+          console.log("Error in authorize:", err);
           return null;
         }
       },
